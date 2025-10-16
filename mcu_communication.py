@@ -61,6 +61,14 @@ class MCUCommunication(QObject):
         except SerialException as e:
             self.error_occured.emit(f'Writing error at `{self.port_name}`: {e}')
 
+    @Slot()
+    def close_connection(self) -> None:
+        if self.timer:
+            self.timer.stop()
+        if self.serial_port and self.serial_port.is_open:
+            self.serial_port.close()
+            self.finished.emit()
+
     # @Slot()
     # def check_port(self):
     #     if self.serial_port.in_waiting > 0:
@@ -128,12 +136,19 @@ def main():
     communication_thread.started.connect(communication.start_communication)
     communication_thread.start()
 
+    communication.finished.connect(communication_thread.quit)
+    communication.finished.connect(communication.deleteLater)
+    communication_thread.finished.connect(communication_thread.deleteLater)
+
     time.sleep(2)
     print('Wake up!')
     communication.write_data('!QP%'.encode('utf-8'))
     # communication.write_data(bytes([33,77,15,48,48,48,48,49,48,14,15,0,134,8,64,37]))
     communication.write_data(bytes([33,77,47,48,48,49,48,49,48,3,131,0,134,10,84,37]))
     communication.write_data('!QP%'.encode('utf-8'))
+    time.sleep(5)
+    communication.finished.emit()
+    print('Finished!')
     sys.exit(app.exec())
     # communication = MCUCommunication()
     # ports = communication.check_available_ports()
