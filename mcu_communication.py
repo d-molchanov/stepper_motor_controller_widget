@@ -4,6 +4,15 @@ from serial.tools.list_ports import comports
 from serial.serialutil import SerialException
 from PySide6.QtCore import QThread, Signal, QObject, Slot, QTimer, QCoreApplication
 import time
+import enum
+
+class MCURequests(enum.Enum):
+    # CHECKSTATE = '!QP%'.encode('utf-8')
+    # SETZERO = '!ZE%'.encode('utf-8')
+    # STOP = '!ST%'.encode('utf-8')
+    CHECKSTATE = b'!QP%'
+    SETZERO = b'!ZE%'
+    STOP = b'!ST%'
 
 
 class MCUCommunication(QObject):
@@ -11,14 +20,29 @@ class MCUCommunication(QObject):
     error_occured = Signal(bytes)
     finished = Signal()
 
-    def __init__(self, port_name: str, baudrate: int=9600) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self.port_name = port_name
-        self.baudrate = baudrate
+        self.port_name = None
+        self.baudrate = None
         self.serial_port = None
         self.timer = None
         self.i = 0
 
+    @Slot(str)
+    def set_port_name(self, port_name: str) -> None:
+        self.port_name = port_name
+        print(self.port_name)
+
+    @Slot(int)
+    def set_baudrate(self, baudrate: int) -> None:
+        self.baudrate = baudrate
+        print(self.baudrate)
+
+    @Slot(dict)
+    def create_request(self, data: dict) -> bytes:
+        print(data)
+
+    @Slot()
     def start_communication(self) -> None:
         try:
             self.serial_port = Serial(self.port_name, self.baudrate, timeout=1)
@@ -35,7 +59,7 @@ class MCUCommunication(QObject):
 
     # @Slot()
     def read_data(self) -> bytes | None:
-        print(f'{self.i = }')
+        # print(f'{self.i = }')
         self.i += 1
         if not self.serial_port:
             return
@@ -68,6 +92,20 @@ class MCUCommunication(QObject):
         if self.serial_port and self.serial_port.is_open:
             self.serial_port.close()
             self.finished.emit()
+
+    @Slot()
+    def check_state(self) -> None:
+        # print(MCURequests.CHECKSTATE == '!QP%'.encode('utf-8'))
+        self.write_data(MCURequests.CHECKSTATE.value)
+
+
+    @Slot()
+    def stop_motor(self) -> None:
+        self.write_data(MCURequests.STOP.value)
+
+    @Slot()
+    def set_zero(self) -> None:
+        self.write_data(MCURequests.SETZERO.value)
 
     # @Slot()
     # def check_port(self):
