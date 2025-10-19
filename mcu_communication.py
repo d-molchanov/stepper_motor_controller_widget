@@ -2,7 +2,7 @@ import sys
 from serial import Serial
 from serial.tools.list_ports import comports
 from serial.serialutil import SerialException
-from PySide6.QtCore import QThread, Signal, QObject, Slot, QTimer, QCoreApplication
+from PySide6.QtCore import QThread, Signal, QObject, Slot, QTimer, QCoreApplication, QDateTime
 import time
 import enum
 
@@ -14,11 +14,16 @@ class MCURequests(enum.Enum):
     SETZERO = b'!ZE%'
     STOP = b'!ST%'
 
+class Status(enum.Enum):
+    INFO = 'INFO'
+    ERROR = 'ERROR'
+
 
 class MCUCommunication(QObject):
     data_received = Signal(bytes)
     error_occured = Signal(bytes)
     finished = Signal()
+    message_sent = Signal(str)
 
     def __init__(self) -> None:
         super().__init__()
@@ -28,15 +33,29 @@ class MCUCommunication(QObject):
         self.timer = None
         self.i = 0
 
+    def format_message(self, msg: str, level: str) -> str:
+        timestamp = QDateTime.currentDateTime().toString('yyyy-MM-dd HH:mm:ss.zzz')
+        return f'{timestamp} {level}: {msg}'
+
+    def logs_update(self, msg: str, level: str) -> None:
+        log_message = self.format_message(msg, level)
+        self.message_sent.emit(log_message)
+
     @Slot(str)
     def set_port_name(self, port_name: str) -> None:
         self.port_name = port_name
-        print(self.port_name)
+        self.logs_update(
+            f'Port `{self.port_name}` was chosen.',
+            Status.INFO.value
+        )
 
     @Slot(int)
     def set_baudrate(self, baudrate: int) -> None:
         self.baudrate = baudrate
-        print(self.baudrate)
+        self.logs_update(
+            f'Baudrate `{self.baudrate}` was chosen.',
+            Status.INFO.value
+        )
 
     @Slot(dict)
     def create_request(self, data: dict) -> bytes:

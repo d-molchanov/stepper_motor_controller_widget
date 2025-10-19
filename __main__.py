@@ -24,6 +24,7 @@ if __name__ == '__main__':
     main_widget.pushButtonStopMotor.clicked.connect(communication.stop_motor)
     main_widget.pushButtonSetZero.clicked.connect(communication.set_zero)
     main_widget.request_created.connect(communication.create_request)
+    communication.message_sent.connect(main_widget.update_logs)
     communication_thread = QThread()
     communication.moveToThread(communication_thread)
     communication_thread.start()

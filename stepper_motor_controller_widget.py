@@ -53,7 +53,9 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
 
     def create_request(self) -> dict:
         result = {
-            'step': self.comboBoxStep.currentText()
+            'step_type': self.comboBoxStep.currentText(),
+            'steps_amount': self.spinBoxSteps.value(),
+            'direction': self.comboBoxDirection.currentText()
         }
         self.request_created.emit(result)
 
