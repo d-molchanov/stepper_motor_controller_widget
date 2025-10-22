@@ -14,13 +14,14 @@ class MCURequests(enum.Enum):
     SETZERO = b'!ZE%'
     STOP = b'!ST%'
 
-class Status(enum.Enum):
+class Status(enum.StrEnum):
     INFO = 'INFO'
     ERROR = 'ERROR'
 
 
 class MCUCommunication(QObject):
     data_received = Signal(bytes)
+    connection_is_active = Signal(bool)
     error_occured = Signal(bytes)
     finished = Signal()
     message_sent = Signal(str)
@@ -44,35 +45,98 @@ class MCUCommunication(QObject):
     @Slot(str)
     def set_port_name(self, port_name: str) -> None:
         self.port_name = port_name
-        self.logs_update(
-            f'Port `{self.port_name}` was chosen.',
-            Status.INFO.value
-        )
+        # self.logs_update(
+        #     f'Port `{self.port_name}` was chosen.',
+        #     Status.INFO
+        # )
 
     @Slot(int)
     def set_baudrate(self, baudrate: int) -> None:
         self.baudrate = baudrate
-        self.logs_update(
-            f'Baudrate `{self.baudrate}` was chosen.',
-            Status.INFO.value
-        )
+        # self.logs_update(
+        #     f'Baudrate `{self.baudrate}` was chosen.',
+        #     Status.INFO
+        # )
 
     @Slot(dict)
     def create_request(self, data: dict) -> bytes:
         print(data)
+        request = [33, 77]
+        steps = {
+            '1:1': [0, 0, 0],
+            '1:2': [1, 0, 0],
+            '1:4': [0, 1, 0],
+            '1:8': [1, 1, 0],
+            '1:16': [1, 1, 1]
+        }
+        st = steps.get(data['step_type'], None)
+        # if not st:
+        #     return
+        third_byte = 0
+        for i, el in enumerate(st[::-1]):
+            third_byte += (el<<(i+4))
+        third_byte |= 0b1110
+        directions = {
+            'Clockwise': 0,
+            'Counterclockwise': 1
+        }
+        d = directions.get(data['direction'], None)
+        # if not d:
+        #     return
+        third_byte |= d
+        request.append(third_byte)
+        st_a = data.get('steps_amount', 0)
+        st_a = f'{st_a:0>6}'
+        request += [ord(el) for el in st_a]
+        prescaler = {
+            '1:1': [0x0e, 0x0f],
+            '1:2': [0x07, 0x07],
+            '1:4': [0x03, 0x83],
+            '1:8': [0x01, 0xc1],
+            '1:16': [0x00, 0xe0]
+        }
+        request += prescaler.get(data['step_type'], [0x0e, 0x0f])
+        velocity = data.get('velocity', 100)
+        request.append((velocity >> 8) & 0xff)
+        request.append(velocity & 0xff)
+        request += [0, 0]
+        crc_sum = 0
+        for el in request[1:-1]:
+            crc_sum += el
+        crc_sum = crc_sum << 1
+        request[-1] = crc_sum & 0xff
+        crc_sum = crc_sum >> 7
+        request[-2] = crc_sum & 0xff
+        request.append(37)
+        print(request)
+        self.write_data(bytes(request))
+
 
     @Slot()
     def start_communication(self) -> None:
         try:
+            self.logs_update(
+                f'Trying to connect to `{self.port_name}` with baudrate {self.baudrate}',
+                Status.INFO
+            )
             self.serial_port = Serial(self.port_name, self.baudrate, timeout=1)
+            self.logs_update(
+                f'Connection to {self.port_name} with baudrate {self.baudrate} has been established.',
+                Status.INFO
+            )
+            self.connection_is_active.emit(True)
         except SerialException as e:
-            self.error_occured.emit(f'Port `{self.port_name}` could not be opened: {e}')
-            print(f'Port `{self.port_name}` could not be opened: {e}')
+            self.logs_update(
+                f'Port `{self.port_name}` could not be opened: {e}',
+                Status.ERROR
+            )
+            # self.error_occured.emit(f'Port `{self.port_name}` could not be opened: {e}')
+            # print(f'Port `{self.port_name}` could not be opened: {e}')
             self.finished.emit()
             return 
 
         self.timer = QTimer()
-        self.timer.setInterval(100)
+        self.timer.setInterval(50)
         self.timer.timeout.connect(self.read_data)
         self.timer.start()
 
@@ -90,6 +154,10 @@ class MCUCommunication(QObject):
                 # data = self.serial_port.read()
                 # self.data_received.emit(data)
                 print(data.decode('utf-8'))
+                self.logs_update(
+                    f'Answer from MCU: `{data.decode("utf-8")}`',
+                    Status.INFO
+                )
         except SerialException as e:
             self.error_occured.emit(f'Reading error at `{self.port_name}`: {e}')
 
@@ -110,11 +178,15 @@ class MCUCommunication(QObject):
             self.timer.stop()
         if self.serial_port and self.serial_port.is_open:
             self.serial_port.close()
+            self.connection_is_active.emit(False)
             self.finished.emit()
 
     @Slot()
     def check_state(self) -> None:
-        # print(MCURequests.CHECKSTATE == '!QP%'.encode('utf-8'))
+        self.logs_update(
+            f'Request to MCU: `{MCURequests.CHECKSTATE.value}`',
+            Status.INFO
+        )
         self.write_data(MCURequests.CHECKSTATE.value)
 
 
@@ -125,6 +197,8 @@ class MCUCommunication(QObject):
     @Slot()
     def set_zero(self) -> None:
         self.write_data(MCURequests.SETZERO.value)
+
+
 
     # @Slot()
     # def check_port(self):

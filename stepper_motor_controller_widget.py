@@ -37,13 +37,13 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
         self.pushButtonConnect.clicked.connect(self.connect_to_port)
         self.pushButtonDisconnect.clicked.connect(self.disconnect_from_port)
         self.logs_updated.connect(self.update_logs)
-        self.connection_established.connect(self.unable_button)
+        # self.connection_established.connect(self.unable_button)
         self.pushButtonRefresh.clicked.connect(self.update_ports_list)
         self.pushButtonClearLogs.clicked.connect(self.textEditLogs.clear)
         self.comboBoxDirection.addItems(
             [
                 'Clockwise', 
-                'Conterclockwise'
+                'Counterclockwise'
             ]
         )
         step_values = ['1:1', '1:2', '1:4', '1:8', '1:16']
@@ -53,9 +53,11 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
 
     def create_request(self) -> dict:
         result = {
+            'request_type': 'Movement',
             'step_type': self.comboBoxStep.currentText(),
             'steps_amount': self.spinBoxSteps.value(),
-            'direction': self.comboBoxDirection.currentText()
+            'direction': self.comboBoxDirection.currentText(),
+            'velocity': 128
         }
         self.request_created.emit(result)
 
@@ -75,30 +77,33 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
         self.textEditLogs.append(msg)
 
     @Slot(bool)
-    def unable_button(self, value: bool) -> None:
-        self.pushButtonConnect.setEnabled(value)
-        self.comboBoxCOMPorts.setEnabled(value)
-        self.comboBoxBaudRate.setEnabled(value)
-        self.pushButtonRefresh.setEnabled(value)
-        self.pushButtonDisconnect.setEnabled(not value)
-        self.pushButtonSend.setEnabled(not value)
-        self.pushButtonStartMotor.setEnabled(not value)
-        self.pushButtonStopMotor.setEnabled(not value)
-        self.pushButtonSetZero.setEnabled(not value)
-        self.pushButtonCheckState.setEnabled(not value)
+    def connection_is_active(self, value: bool) -> None:
+    # def unable_button(self, value: bool) -> None:
+        self.pushButtonDisconnect.setEnabled(value)
+        self.pushButtonSend.setEnabled(value)
+        self.pushButtonStartMotor.setEnabled(value)
+        self.pushButtonStopMotor.setEnabled(value)
+        self.pushButtonSetZero.setEnabled(value)
+        self.pushButtonCheckState.setEnabled(value)
+        
+        self.pushButtonConnect.setEnabled(not value)
+        self.comboBoxCOMPorts.setEnabled(not value)
+        self.comboBoxBaudRate.setEnabled(not value)
+        self.pushButtonRefresh.setEnabled(not value)
+        # self.pushButtonRefresh.setDisabled(value)
 
     @Slot()
     def disconnect_from_port(self):
-        self.connection_established.emit(True)
+        # self.connection_established.emit(True)
         self.disconnection_requested.emit()
-        msg = f'Connection to {self.port_name} has been closed.' 
-        self.logs_updated.emit(
-            self.format_message(msg, 'INFO')
-        )
+        # msg = f'Connection to {self.port_name} has been closed.' 
+        # self.logs_updated.emit(
+        #     self.format_message(msg, 'INFO')
+        # )
 
-    def format_message(self, msg: str, level: str) -> str:
-        timestamp = QDateTime.currentDateTime().toString('yyyy-MM-dd HH:mm:ss.zzz')
-        return f'{timestamp} {level}: {msg}'
+    # def format_message(self, msg: str, level: str) -> str:
+    #     timestamp = QDateTime.currentDateTime().toString('yyyy-MM-dd HH:mm:ss.zzz')
+    #     return f'{timestamp} {level}: {msg}'
 
     @Slot()
     def connect_to_port(self):
@@ -107,10 +112,10 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
         self.baudrate = self.comboBoxBaudRate.currentText()
         self.baudrate_chosen.emit(int(self.baudrate))
         self.connection_requested.emit()
-        self.connection_established.emit(False)
-        msg = f'Connection to {self.port_name} with baudrate {self.baudrate} has been established.' 
-        self.logs_updated.emit(
-            self.format_message(msg, 'INFO')
-        )
+        # self.connection_established.emit(False)
+        # msg = f'Connection to {self.port_name} with baudrate {self.baudrate} has been established.' 
+        # self.logs_updated.emit(
+        #     self.format_message(msg, 'INFO')
+        # )
         # self.logs_updated.emit(f'{self.port_name} - {self.baudrate}')
         # print(f'{self.comboBoxCOMPorts.currentText()} - {self.comboBoxBaudRate.currentText()}')
