@@ -1,3 +1,4 @@
+
 from PySide6.QtCore import QObject, Signal, QDateTime
 
 
@@ -29,6 +30,9 @@ class MCUCommunicationBase(QObject):
         raise NotImplementedError()
     
     def write_data(self, data: bytes) -> None:
+        raise NotImplementedError()
+    
+    def create_request(self, data: dict) -> bytes:
         raise NotImplementedError()
     
 
