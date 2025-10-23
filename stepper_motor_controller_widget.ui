@@ -23,21 +23,21 @@
    <property name="geometry">
     <rect>
      <x>630</x>
-     <y>10</y>
+     <y>0</y>
      <width>151</width>
-     <height>281</height>
+     <height>341</height>
     </rect>
    </property>
    <property name="title">
     <string>Motor</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>20</y>
       <width>131</width>
-      <height>251</height>
+      <height>302</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -74,12 +74,28 @@
       </widget>
      </item>
      <item>
+      <widget class="QSpinBox" name="spinBoxVelocity">
+       <property name="toolTip">
+        <string>Velosity</string>
+       </property>
+       <property name="maximum">
+        <number>65535</number>
+       </property>
+       <property name="value">
+        <number>200</number>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QSpinBox" name="spinBoxSteps">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Steps</string>
        </property>
        <property name="maximum">
         <number>999999</number>
@@ -128,6 +144,22 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="pushButtonPoweroffMotor">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Poweroff Motor</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="pushButtonSetZero">
        <property name="enabled">
         <bool>false</bool>
@@ -162,7 +194,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget_2">
    <property name="geometry">
     <rect>
      <x>1</x>

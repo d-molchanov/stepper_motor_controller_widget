@@ -13,9 +13,9 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
     connection_established = Signal(bool)
     com_port_chosen = Signal(str)
     baudrate_chosen = Signal(int)
-    connection_requested = Signal()
+    connection_requested = Signal(str, int)
     disconnection_requested = Signal()
-    request_created = Signal(dict)
+    movement_request_created = Signal(dict)
 
     def __init__(self) -> None:
         super().__init__()
@@ -57,9 +57,9 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
             'step_type': self.comboBoxStep.currentText(),
             'steps_amount': self.spinBoxSteps.value(),
             'direction': self.comboBoxDirection.currentText(),
-            'velocity': 128
+            'velocity': self.spinBoxVelocity.value()
         }
-        self.request_created.emit(result)
+        self.movement_request_created.emit(result)
 
     def check_available_comports(self) -> list:
         return [
@@ -85,7 +85,7 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
         self.pushButtonStopMotor.setEnabled(value)
         self.pushButtonSetZero.setEnabled(value)
         self.pushButtonCheckState.setEnabled(value)
-        
+        self.pushButtonPoweroffMotor.setEnabled(value)
         self.pushButtonConnect.setEnabled(not value)
         self.comboBoxCOMPorts.setEnabled(not value)
         self.comboBoxBaudRate.setEnabled(not value)
@@ -108,10 +108,10 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
     @Slot()
     def connect_to_port(self):
         self.port_name = self.comboBoxCOMPorts.currentText()
-        self.com_port_chosen.emit(self.port_name)
-        self.baudrate = self.comboBoxBaudRate.currentText()
-        self.baudrate_chosen.emit(int(self.baudrate))
-        self.connection_requested.emit()
+        # self.com_port_chosen.emit(self.port_name)
+        self.baudrate = int(self.comboBoxBaudRate.currentText())
+        # self.baudrate_chosen.emit(int(self.baudrate))
+        self.connection_requested.emit(self.port_name, self.baudrate)
         # self.connection_established.emit(False)
         # msg = f'Connection to {self.port_name} with baudrate {self.baudrate} has been established.' 
         # self.logs_updated.emit(

@@ -122,6 +122,83 @@ class STM32Communication(MCUCommunicationBase):
                 f'Writing error at `{self.port_name}`: {e}',
                 Level.ERROR
             )
+
+    def _create_third_byte(self, data: dict) -> int | None:
+        step_divider = {
+            '1:1': [0, 0, 0],
+            '1:2': [1, 0, 0],
+            '1:4': [0, 1, 0],
+            '1:8': [1, 1, 0],
+            '1:16': [1, 1, 1]
+        }
+        step_bits = step_divider.get(data['step_type'], None)
+        print(f'{step_bits = }')
+        if not step_bits:
+            return
+        result = 0
+        for i, bit in enumerate(step_bits[::-1]):
+            result += (bit << (i+4))
+        result |= 0b1110
+        
+        directions = {
+            'Clockwise': 0,
+            'Counterclockwise': 1    
+        }
+        direction = directions.get(data['direction'], None)
+        print(f'{direction = }')
+        if direction is None:
+            return
+        result |= direction
+        return result
+    
+    def _choose_prescaler(self, data: dict) -> list:
+        prescaler = {
+            '1:1': [0x0e, 0x0f], # 3599: f =  20 kHz
+            '1:2': [0x07, 0x07], # 1799: f =  40 kHz
+            '1:4': [0x03, 0x83], #  899: f =  80 kHz
+            '1:8': [0x01, 0xc1], #  449: f = 160 kHz
+            '1:16': [0x00, 0xe0] #  224: f = 320 kHz
+        }
+        return prescaler.get(data['step_type'], [0x0e, 0x0f])
+
+    def _calculate_crc(self, request: list[int]) -> list[int] | None:
+        crc_sum = 0
+        result = [0, 0]
+        for el in request:
+            crc_sum += el
+        crc_sum = crc_sum << 1
+        result[-1] = crc_sum & 0xff
+        crc_sum = crc_sum >> 7
+        result[0] = crc_sum & 0xff
+        return result
+   
+    def _create_request(self, data: dict) -> bytes | None:
+        request = [
+            33, # Start byte '!'
+            77  # Byte for movement 'M'
+        ]
+        third_byte = self._create_third_byte(data)
+        if not third_byte:
+            return
+        request.append(third_byte)
+        steps_amount = data.get('steps_amount', 0)
+        request += [ord(el) for el in f'{steps_amount:0>6}']
+        request += self._choose_prescaler(data)
+        velocity = data.get('velocity', 100)
+        request.append((velocity >> 8) & 0xff)
+        request.append(velocity & 0xff)
+        request += self._calculate_crc(request[1:])
+        request.append(37) # End byte '%'
+        return request
+    
+    @Slot(dict)
+    def start_movement(self, data: dict) -> None:
+        request = self._create_request(data)
+        print(f'{data = }')
+        print(f'{request = }')
+        self.update_logs(str(request), Level.INFO)
+        if request:
+            self.write_data(bytes(request))
     
     @Slot()
     def check_state(self) -> None:
@@ -145,8 +222,8 @@ class STM32Communication(MCUCommunicationBase):
         self.write_data(StmRequest.SETZERO.encode('utf-8'))
 
 def main() -> None:
-    communication = STM32Communication('COM9', 9600)
-    communication.start_communication()
+    communication = STM32Communication()
+    communication.start_communication('COM9', 9600)
     communication.check_state()
     print('Done!')
 
