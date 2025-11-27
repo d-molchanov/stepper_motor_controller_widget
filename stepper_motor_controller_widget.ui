@@ -19,36 +19,12 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QGroupBox" name="groupBoxMotor">
-   <property name="geometry">
-    <rect>
-     <x>760</x>
-     <y>170</y>
-     <width>151</width>
-     <height>351</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Motor</string>
-   </property>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>20</y>
-      <width>131</width>
-      <height>302</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_6"/>
-   </widget>
-  </widget>
   <widget class="QWidget" name="layoutWidget_2">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>10</y>
-     <width>331</width>
+     <width>571</width>
      <height>321</height>
     </rect>
    </property>
@@ -143,6 +119,35 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="pushButtonDisconnect">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Disconnect</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>icons/disconnect.svg</normaloff>icons/disconnect.svg</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Orientation::Horizontal</enum>
@@ -160,7 +165,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QTextEdit" name="textEdit_2">
+       <widget class="QTextEdit" name="textEditMessage">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -266,7 +271,7 @@
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-     <x>340</x>
+     <x>580</x>
      <y>10</y>
      <width>311</width>
      <height>271</height>
@@ -285,7 +290,7 @@
     <attribute name="title">
      <string>Raw</string>
     </attribute>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -394,71 +399,82 @@
     <attribute name="title">
      <string>Control</string>
     </attribute>
+    <widget class="QWidget" name="">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>207</width>
+       <height>56</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelMoveTo">
+        <property name="text">
+         <string>Move to</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBoxMoveTo">
+        <property name="minimum">
+         <double>-1000.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>1000.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QComboBox" name="comboBoxMovementUnits"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelControlVelocity">
+        <property name="text">
+         <string>Velocity</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBoxVelocity">
+        <property name="maximum">
+         <double>1000.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QComboBox" name="comboBoxVelocityUnits"/>
+      </item>
+     </layout>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_3">
     <attribute name="title">
      <string>Sequence</string>
     </attribute>
+    <widget class="QTextEdit" name="textEditProgram">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>231</width>
+       <height>131</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
-  </widget>
-  <widget class="QPushButton" name="pushButtonDisconnect">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>110</x>
-     <y>430</y>
-     <width>146</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>0</width>
-     <height>32</height>
-    </size>
-   </property>
-   <property name="toolTip">
-    <string>Disconnect</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>icons/disconnect.svg</normaloff>icons/disconnect.svg</iconset>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>24</width>
-     <height>24</height>
-    </size>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelMoveTo">
-   <property name="geometry">
-    <rect>
-     <x>440</x>
-     <y>400</y>
-     <width>49</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Move to</string>
-   </property>
   </widget>
   <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>660</x>
-     <y>30</y>
-     <width>38</width>
-     <height>186</height>
+     <x>580</x>
+     <y>290</y>
+     <width>248</width>
+     <height>34</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_7">
+   <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
      <widget class="QPushButton" name="pushButtonStartMotor">
       <property name="enabled">
@@ -601,6 +617,35 @@
       <property name="icon">
        <iconset>
         <normaloff>icons/check_state.svg</normaloff>icons/check_state.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>24</width>
+        <height>24</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButtonMeasure">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="toolTip">
+       <string>Measure</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>icons/measure.svg</normaloff>icons/measure.svg</iconset>
       </property>
       <property name="iconSize">
        <size>

@@ -16,6 +16,26 @@ class StmRequest(StrEnum):
     CHECKSTATE = '!QP%'
     SETZERO = '!ZE%'
     STOP = '!ST%'
+    # POWEROFF = bytes(
+    #     [
+    #         33,   # '!'
+    #         77,   # 'M'
+    #         255,  # 0b1111_1111
+    #         48,   # '0'
+    #         48,   # '0'
+    #         48,   # '0'
+    #         48,   # '0'
+    #         48,   # '0'
+    #         49,   # '1'
+    #         0,    # prescaller for 1:16
+    #         224,  # prescaller for 1:16
+    #         0,    # velocity
+    #         128,  # velocity
+    #         15,   # crc
+    #         154,  # crc
+    #         37    # '%'
+    #     ]
+    # )
 
 class STM32Communication(MCUCommunicationBase):
 

@@ -50,6 +50,10 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
         self.comboBoxStep.addItems(step_values)
         self.comboBoxStep.setCurrentIndex(len(step_values)-1)
         self.pushButtonStartMotor.clicked.connect(self.create_request)
+        units_values = ['um', 'mm', 'cm']
+        self.comboBoxMovementUnits.addItems(units_values)
+        velocity_values = ['um/s', 'mm/s', 'cm/s', 'm/s']
+        self.comboBoxVelocityUnits.addItems(velocity_values)
 
     def create_request(self) -> dict:
         result = {
@@ -86,6 +90,7 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
         self.pushButtonSetZero.setEnabled(value)
         self.pushButtonCheckState.setEnabled(value)
         self.pushButtonPoweroffMotor.setEnabled(value)
+        self.pushButtonMeasure.setEnabled(value)
         self.pushButtonConnect.setEnabled(not value)
         self.comboBoxCOMPorts.setEnabled(not value)
         self.comboBoxBaudRate.setEnabled(not value)
