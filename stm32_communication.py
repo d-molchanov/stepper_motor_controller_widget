@@ -219,6 +219,30 @@ class STM32Communication(MCUCommunicationBase):
         self.update_logs(str(request), Level.INFO)
         if request:
             self.write_data(bytes(request))
+
+    @Slot()
+    def poweroff_motor(self) -> None:
+        request = bytes(
+            [
+                33,   # '!'
+                77,   # 'M'
+                255,  # 0b1111_1111
+                48,   # '0'
+                48,   # '0'
+                48,   # '0'
+                48,   # '0'
+                48,   # '0'
+                49,   # '1'
+                0,    # prescaller for 1:16
+                224,  # prescaller for 1:16
+                0,    # velocity
+                128,  # velocity
+                15,   # crc
+                154,  # crc
+                37    # '%'
+            ]
+        )
+        self.write_data(request)
     
     @Slot()
     def check_state(self) -> None:

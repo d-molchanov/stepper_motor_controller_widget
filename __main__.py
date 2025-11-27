@@ -1,6 +1,11 @@
 import sys
 from PySide6.QtCore import QThread
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QStyleFactory
+from PySide6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QWidget,
+    QStyleFactory
+)
 from stepper_motor_controller_widget import StepperMotorControllerWidget
 from mcu_communication import MCUCommunication
 from stm32_communication import STM32Communication
@@ -37,6 +42,10 @@ if __name__ == '__main__':
     )
     main_widget.movement_request_created.connect(
         communication.start_movement
+    )
+
+    main_widget.pushButtonPoweroffMotor.clicked.connect(
+        communication.poweroff_motor
     )
 
     communication.logs_updated.connect(main_widget.update_logs)
