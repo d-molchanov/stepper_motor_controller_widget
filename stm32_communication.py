@@ -222,6 +222,9 @@ class STM32Communication(MCUCommunicationBase):
 
     @Slot()
     def poweroff_motor(self) -> None:
+        self.update_logs(
+            'Request to STM32: `POWEROFF`', Level.INFO
+        )
         request = bytes(
             [
                 33,   # '!'

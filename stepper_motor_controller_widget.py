@@ -5,6 +5,7 @@ from serial.tools.list_ports import comports
 
 from PySide6.QtCore import Signal, Slot, QTime, QDateTime
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
+from PySide6.QtGui import QIcon
 from ui_stepper_motor_controller_widget import Ui_Form
 
 
@@ -23,6 +24,10 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
         self.serial_port = None
         self.port_name = None
         self.baudrate = 0
+        self.connect_icon = QIcon('./Icons/connect.svg')
+        self.disconnect_icon = QIcon('./Icons/disconnect.svg')
+        self.pushButtonDisconnect.setVisible(False)
+        self.active_connection = False
         comports = self.check_available_comports()
         self.comboBoxCOMPorts.addItems(comports)
         self.comboBoxBaudRate.addItems(
@@ -64,6 +69,7 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
             'velocity': self.spinBoxVelocity.value()
         }
         self.movement_request_created.emit(result)
+        self.update_logs(f'{self.tabWidget.currentIndex() = }')
 
     def check_available_comports(self) -> list:
         return [
@@ -83,7 +89,7 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
     @Slot(bool)
     def connection_is_active(self, value: bool) -> None:
     # def unable_button(self, value: bool) -> None:
-        self.pushButtonDisconnect.setEnabled(value)
+        # self.pushButtonDisconnect.setEnabled(value)
         self.pushButtonSend.setEnabled(value)
         self.pushButtonStartMotor.setEnabled(value)
         self.pushButtonStopMotor.setEnabled(value)
@@ -91,7 +97,7 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
         self.pushButtonCheckState.setEnabled(value)
         self.pushButtonPoweroffMotor.setEnabled(value)
         self.pushButtonMeasure.setEnabled(value)
-        self.pushButtonConnect.setEnabled(not value)
+        # self.pushButtonConnect.setEnabled(not value)
         self.comboBoxCOMPorts.setEnabled(not value)
         self.comboBoxBaudRate.setEnabled(not value)
         self.pushButtonRefresh.setEnabled(not value)
@@ -112,11 +118,19 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
 
     @Slot()
     def connect_to_port(self):
-        self.port_name = self.comboBoxCOMPorts.currentText()
-        # self.com_port_chosen.emit(self.port_name)
-        self.baudrate = int(self.comboBoxBaudRate.currentText())
-        # self.baudrate_chosen.emit(int(self.baudrate))
-        self.connection_requested.emit(self.port_name, self.baudrate)
+        if not self.active_connection:
+            self.port_name = self.comboBoxCOMPorts.currentText()
+            # self.com_port_chosen.emit(self.port_name)
+            self.baudrate = int(self.comboBoxBaudRate.currentText())
+            # self.baudrate_chosen.emit(int(self.baudrate))
+            self.connection_requested.emit(self.port_name, self.baudrate)
+            icon = QIcon('./icons/disconnect.svg')
+            self.pushButtonConnect.setIcon(icon)
+            self.active_connection = True
+        else:
+            self.active_connection = False
+            self.pushButtonConnect.setIcon(self.connect_icon)
+            self.disconnection_requested.emit()
         # self.connection_established.emit(False)
         # msg = f'Connection to {self.port_name} with baudrate {self.baudrate} has been established.' 
         # self.logs_updated.emit(
