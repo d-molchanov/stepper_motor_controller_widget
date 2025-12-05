@@ -61,15 +61,28 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
         self.comboBoxVelocityUnits.addItems(velocity_values)
 
     def create_request(self) -> dict:
-        result = {
-            'request_type': 'Movement',
-            'step_type': self.comboBoxStep.currentText(),
-            'steps_amount': self.spinBoxSteps.value(),
-            'direction': self.comboBoxDirection.currentText(),
-            'velocity': self.spinBoxVelocity.value()
-        }
-        self.movement_request_created.emit(result)
         self.update_logs(f'{self.tabWidget.currentIndex() = }')
+        if self.tabWidget.currentIndex() == 0:
+            result = {
+                'request_type': 'Movement',
+                'step_type': self.comboBoxStep.currentText(),
+                'steps_amount': self.spinBoxSteps.value(),
+                'direction': self.comboBoxDirection.currentText(),
+                'velocity': self.spinBoxVelocity.value()
+            }
+            self.movement_request_created.emit(result)
+        elif self.tabWidget.currentIndex() == 1:
+            self.update_logs(
+                f'Move to {self.doubleSpinBoxMoveTo.value()}'
+                f' {self.comboBoxMovementUnits.currentText()}'
+            )
+            result = {
+                'request_type': 'Movement',
+                'step_type': '1:16',
+                'steps_amount': self.spinBoxSteps.value(),
+                'direction': self.comboBoxDirection.currentText(),
+                'velocity': self.spinBoxVelocity.value()
+            }
 
     def check_available_comports(self) -> list:
         return [

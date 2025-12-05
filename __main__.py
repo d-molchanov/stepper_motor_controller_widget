@@ -17,7 +17,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create('Fusion'))
     main_window = QMainWindow()
-    main_window.resize(785, 300)
+    main_window.resize(900, 330)
     main_widget = StepperMotorControllerWidget()
     main_window.setCentralWidget(main_widget)
 
