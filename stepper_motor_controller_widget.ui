@@ -404,15 +404,35 @@
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>207</width>
-       <height>56</height>
+       <width>208</width>
+       <height>86</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelControlVelocity">
+        <property name="text">
+         <string>Velocity</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QComboBox" name="comboBoxMovementUnits"/>
+      </item>
+      <item row="2" column="2">
+       <widget class="QComboBox" name="comboBoxVelocityUnits"/>
+      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="labelMoveTo">
         <property name="text">
          <string>Move to</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBoxVelocity">
+        <property name="maximum">
+         <double>1000.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -426,25 +446,22 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QComboBox" name="comboBoxMovementUnits"/>
-      </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="labelControlVelocity">
+       <widget class="QLabel" name="labelScale">
         <property name="text">
-         <string>Velocity</string>
+         <string>Scale</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBoxVelocity">
+       <widget class="QDoubleSpinBox" name="doubleSpinBoxScale">
         <property name="maximum">
-         <double>1000.000000000000000</double>
+         <double>10000.000000000000000</double>
+        </property>
+        <property name="value">
+         <double>7.000000000000000</double>
         </property>
        </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QComboBox" name="comboBoxVelocityUnits"/>
       </item>
      </layout>
     </widget>

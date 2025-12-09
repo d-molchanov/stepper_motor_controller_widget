@@ -221,14 +221,35 @@ class Ui_Form(object):
         self.tab_2.setObjectName(u"tab_2")
         self.widget = QWidget(self.tab_2)
         self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(10, 20, 207, 56))
+        self.widget.setGeometry(QRect(10, 20, 208, 86))
         self.gridLayout_2 = QGridLayout(self.widget)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.labelControlVelocity = QLabel(self.widget)
+        self.labelControlVelocity.setObjectName(u"labelControlVelocity")
+
+        self.gridLayout_2.addWidget(self.labelControlVelocity, 2, 0, 1, 1)
+
+        self.comboBoxMovementUnits = QComboBox(self.widget)
+        self.comboBoxMovementUnits.setObjectName(u"comboBoxMovementUnits")
+
+        self.gridLayout_2.addWidget(self.comboBoxMovementUnits, 0, 2, 1, 1)
+
+        self.comboBoxVelocityUnits = QComboBox(self.widget)
+        self.comboBoxVelocityUnits.setObjectName(u"comboBoxVelocityUnits")
+
+        self.gridLayout_2.addWidget(self.comboBoxVelocityUnits, 2, 2, 1, 1)
+
         self.labelMoveTo = QLabel(self.widget)
         self.labelMoveTo.setObjectName(u"labelMoveTo")
 
         self.gridLayout_2.addWidget(self.labelMoveTo, 0, 0, 1, 1)
+
+        self.doubleSpinBoxVelocity = QDoubleSpinBox(self.widget)
+        self.doubleSpinBoxVelocity.setObjectName(u"doubleSpinBoxVelocity")
+        self.doubleSpinBoxVelocity.setMaximum(1000.000000000000000)
+
+        self.gridLayout_2.addWidget(self.doubleSpinBoxVelocity, 2, 1, 1, 1)
 
         self.doubleSpinBoxMoveTo = QDoubleSpinBox(self.widget)
         self.doubleSpinBoxMoveTo.setObjectName(u"doubleSpinBoxMoveTo")
@@ -237,26 +258,17 @@ class Ui_Form(object):
 
         self.gridLayout_2.addWidget(self.doubleSpinBoxMoveTo, 0, 1, 1, 1)
 
-        self.comboBoxMovementUnits = QComboBox(self.widget)
-        self.comboBoxMovementUnits.setObjectName(u"comboBoxMovementUnits")
+        self.labelScale = QLabel(self.widget)
+        self.labelScale.setObjectName(u"labelScale")
 
-        self.gridLayout_2.addWidget(self.comboBoxMovementUnits, 0, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.labelScale, 1, 0, 1, 1)
 
-        self.labelControlVelocity = QLabel(self.widget)
-        self.labelControlVelocity.setObjectName(u"labelControlVelocity")
+        self.doubleSpinBoxScale = QDoubleSpinBox(self.widget)
+        self.doubleSpinBoxScale.setObjectName(u"doubleSpinBoxScale")
+        self.doubleSpinBoxScale.setMaximum(10000.000000000000000)
+        self.doubleSpinBoxScale.setValue(7.000000000000000)
 
-        self.gridLayout_2.addWidget(self.labelControlVelocity, 1, 0, 1, 1)
-
-        self.doubleSpinBoxVelocity = QDoubleSpinBox(self.widget)
-        self.doubleSpinBoxVelocity.setObjectName(u"doubleSpinBoxVelocity")
-        self.doubleSpinBoxVelocity.setMaximum(1000.000000000000000)
-
-        self.gridLayout_2.addWidget(self.doubleSpinBoxVelocity, 1, 1, 1, 1)
-
-        self.comboBoxVelocityUnits = QComboBox(self.widget)
-        self.comboBoxVelocityUnits.setObjectName(u"comboBoxVelocityUnits")
-
-        self.gridLayout_2.addWidget(self.comboBoxVelocityUnits, 1, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.doubleSpinBoxScale, 1, 1, 1, 1)
 
         self.tabWidget.addTab(self.tab_2, "")
         self.tab_3 = QWidget()
@@ -381,8 +393,9 @@ class Ui_Form(object):
 #endif // QT_CONFIG(tooltip)
         self.labelVelocity.setText(QCoreApplication.translate("Form", u"Velocity", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("Form", u"Raw", None))
-        self.labelMoveTo.setText(QCoreApplication.translate("Form", u"Move to", None))
         self.labelControlVelocity.setText(QCoreApplication.translate("Form", u"Velocity", None))
+        self.labelMoveTo.setText(QCoreApplication.translate("Form", u"Move to", None))
+        self.labelScale.setText(QCoreApplication.translate("Form", u"Scale", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("Form", u"Control", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("Form", u"Sequence", None))
 #if QT_CONFIG(tooltip)

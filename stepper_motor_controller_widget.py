@@ -54,11 +54,23 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
         step_values = ['1:1', '1:2', '1:4', '1:8', '1:16']
         self.comboBoxStep.addItems(step_values)
         self.comboBoxStep.setCurrentIndex(len(step_values)-1)
+        self.spinBoxVelocity.setMinimum(10)
         self.pushButtonStartMotor.clicked.connect(self.create_request)
         units_values = ['um', 'mm', 'cm']
         self.comboBoxMovementUnits.addItems(units_values)
         velocity_values = ['um/s', 'mm/s', 'cm/s', 'm/s']
         self.comboBoxVelocityUnits.addItems(velocity_values)
+        self.comboBoxStep.currentTextChanged.connect(
+            self.onStepDividerChanged
+        )
+
+    @Slot(str)
+    def onStepDividerChanged(self, step_divider):
+        if step_divider == '1:16':
+            self.spinBoxVelocity.setMinimum(10)
+        else:
+            self.spinBoxVelocity.setMinimum(1)
+
 
     def create_request(self) -> dict:
         self.update_logs(f'{self.tabWidget.currentIndex() = }')
@@ -76,13 +88,34 @@ class StepperMotorControllerWidget(QWidget, Ui_Form):
                 f'Move to {self.doubleSpinBoxMoveTo.value()}'
                 f' {self.comboBoxMovementUnits.currentText()}'
             )
+            coordinate = self.doubleSpinBoxMoveTo.value()
+            if coordinate >= 0:
+                direction = 'Clockwise'
+            else:
+                direction = 'Counterclockwise'
+                coordinate = abs(coordinate)
+            units = self.comboBoxMovementUnits.currentText()
+            factor_dict = {
+                'um': 1.0,
+                'mm': 1e3,
+                'cm': 1e4
+            }
+            factor = factor_dict.get(units, None)
+            if factor:
+                scale = self.doubleSpinBoxScale.value()
+                steps_amount = round(coordinate * factor / scale)
+            else:
+                steps_amount = None
             result = {
                 'request_type': 'Movement',
                 'step_type': '1:16',
-                'steps_amount': self.spinBoxSteps.value(),
-                'direction': self.comboBoxDirection.currentText(),
+                'steps_amount': steps_amount,
+                'direction': direction,
                 'velocity': self.spinBoxVelocity.value()
             }
+            self.update_logs(f'{result = }')
+            self.movement_request_created.emit(result)
+
 
     def check_available_comports(self) -> list:
         return [
